@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#123b31" />
+  <title>RoadSathi — Road issue reporting</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#home" aria-label="RoadSathi home"><span class="brand-mark">R</span><span>Road<span class="brand-light">Sathi</span></span></a>
+    <div class="top-right"><span class="city-pill"><span class="live-dot"></span> Chennai pilot</span><button class="avatar" aria-label="Profile">S</button></div>
+  </header>
+
+  <main class="app-shell" id="home">
+    <section class="intro">
+      <div><p class="eyebrow">CITIZEN ROAD REPORTING</p><h1>Make your road<br /><em>count.</em></h1><p class="intro-copy">Spot a road issue? Share its location and evidence so it can reach the right civic team.</p></div>
+      <div class="hero-art" aria-hidden="true"><div class="sun"></div><div class="road-shape"></div><span class="pin pin-one">●</span><span class="pin pin-two">●</span><span class="art-label">LOCAL<br />REPORTS</span></div>
+    </section>
+
+    <nav class="tabs" aria-label="App sections"><button class="tab active" data-view="report">＋ <span>Report issue</span></button><button class="tab" data-view="dashboard">▤ <span>Reports <b id="report-count">0</b></span></button></nav>
+
+    <section class="view" id="report-view">
+      <div class="section-heading"><div><p class="eyebrow">NEW REPORT</p><h2>What did you notice?</h2></div><span class="step-tag">01 / 03</span></div>
+      <form id="report-form">
+        <label class="field-label" for="issue-type">Issue type</label>
+        <div class="issue-grid" id="issue-grid">
+          <button class="issue-option selected" type="button" data-type="Pothole"><span class="issue-icon">◉</span><span>Pothole</span></button>
+          <button class="issue-option" type="button" data-type="Damaged road"><span class="issue-icon">⌁</span><span>Damaged road</span></button>
+          <button class="issue-option" type="button" data-type="Road closure"><span class="issue-icon">⊘</span><span>Road closure</span></button>
+          <button class="issue-option" type="button" data-type="Construction"><span class="issue-icon">⚒</span><span>Construction</span></button>
+        </div>
+        <input type="hidden" id="issue-type" value="Pothole" />
+
+        <div class="field-row"><label class="field-label" for="description">Add a note <span class="optional">OPTIONAL</span></label><span class="char-count" id="char-count">0/180</span></div>
+        <textarea id="description" maxlength="180" placeholder="For example: deep pothole near the bus stop"></textarea>
+
+        <div class="field-row evidence-heading"><span class="field-label">Photo evidence</span><span class="optional">TAKE OR UPLOAD</span></div>
+        <div class="evidence-box" id="evidence-box">
+          <div class="evidence-empty" id="evidence-empty"><div class="camera-symbol">⌖</div><strong>Add a photo of the issue</strong><span>Keep people and number plates out of frame where possible.</span><div class="evidence-actions"><button type="button" class="button secondary" id="camera-button">Open camera</button><label class="button secondary upload-button" for="file-input">Choose photo</label></div></div>
+          <video id="camera-preview" autoplay playsinline hidden></video>
+          <img id="photo-preview" alt="Selected road issue evidence" hidden />
+          <div class="camera-controls" id="camera-controls" hidden><button type="button" class="button secondary" id="cancel-camera">Cancel</button><button type="button" class="button primary compact" id="capture-button">Capture photo</button></div>
+          <button type="button" class="remove-photo" id="remove-photo" hidden aria-label="Remove photo">×</button>
+        </div>
+        <input id="file-input" type="file" accept="image/*" hidden />
+
+        <div class="location-card"><div class="location-icon">⌖</div><div class="location-copy"><strong>Where is the issue?</strong><span id="location-status">Location hasn’t been added yet</span></div><button type="button" class="button location-button" id="location-button">Use my location</button></div>
+        <div class="location-map" id="location-map" hidden><div id="pick-map"></div><span class="map-caption" id="map-caption">Drag the pin or tap the map to adjust</span></div>
+
+        <button class="button primary submit-button" id="submit-button" type="submit"><span>Submit road report</span><span>→</span></button>
+        <p class="privacy-note">Your report stays on this demo device. Authority routing is simulated for this prototype.</p>
+      </form>
+    </section>
+
+    <section class="view" id="dashboard-view" hidden>
+      <div class="section-heading"><div><p class="eyebrow">COMMUNITY FEED</p><h2>Road reports</h2></div><span class="step-tag" id="feed-total">0 reports</span></div>
+      <div class="dashboard-note"><span class="note-icon">i</span><span>Prototype dashboard · reports are stored on this device. Department assignment is a demo.</span></div>
+      <div class="dashboard-actions"><button type="button" class="link-button" id="load-samples">Load sample reports</button><button type="button" class="link-button danger" id="clear-reports">Clear all reports</button></div>
+      <div id="reports-map" hidden></div>
+      <div class="map-legend" id="map-legend" hidden></div>
+      <div class="report-list" id="report-list"></div>
+      <div class="empty-state" id="empty-state"><div class="empty-icon">⌁</div><h3>No reports yet</h3><p>Submit a report and it will appear here.</p><button class="button primary" id="first-report">Create first report <span>→</span></button></div>
+    </section>
+    <footer><span>ROAD<span class="brand-light">SATHI</span></span><span>Built for safer streets, together.</span></footer>
+  </main>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+  <script src="zones.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
