@@ -24,7 +24,7 @@ Use it while parked. Never operate it while driving.
 
 ## What is real and what is simulated
 
-- Real: camera and photo capture, GPS capture, on-device storage (IndexedDB), nearest-zone calculation.
+- Real: camera and photo capture, GPS capture, interactive map (Leaflet with OpenStreetMap tiles), on-device storage (IndexedDB), nearest-zone calculation.
 - Simulated: authority routing. The app picks the nearest of 15 Greater Chennai Corporation zone centres using approximate coordinates in `zones.js`. Nothing is sent to GCC or any government system, and there is no server.
 
 ## Architecture
@@ -32,7 +32,9 @@ Use it while parked. Never operate it while driving.
 - `index.html`: report form and dashboard.
 - `style.css`: responsive phone-first styles.
 - `zones.js`: demo zone list, haversine distance, nearest-zone lookup.
-- `app.js`: camera, geolocation, image resizing, IndexedDB storage, dashboard rendering.
+- `app.js`: camera, geolocation, maps, image resizing, IndexedDB storage, dashboard rendering.
+
+Maps use [Leaflet](https://leafletjs.com) and map data &copy; [OpenStreetMap](https://www.openstreetmap.org/copyright) contributors. An internet connection is needed for map tiles.
 
 ## Sample data
 

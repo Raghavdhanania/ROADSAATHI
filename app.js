@@ -224,9 +224,9 @@ locationButton.addEventListener('click', () => {
       lng: position.coords.longitude,
       accuracy: Math.round(position.coords.accuracy)
     };
-    locationStatus.textContent = `${coords.lat.toFixed(5)}, ${coords.lng.toFixed(5)} (±${coords.accuracy} m)`;
-    mapCaption.textContent = 'Location captured';
+    updateLocationText();
     locationMap.hidden = false;
+    showPickMap();
     locationCard.classList.add('done');
     locationButton.textContent = 'Update';
     locationButton.disabled = false;
@@ -241,6 +241,81 @@ locationButton.addEventListener('click', () => {
     notify(messages[error.code] || 'Could not get your location.');
   }, { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 });
 });
+
+
+/* ---------- Maps (Leaflet + OpenStreetMap) ---------- */
+const mapsAvailable = typeof L !== 'undefined';
+const TILE_URL = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
+const TILE_ATTR = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
+const ISSUE_COLORS = { 'Pothole': '#d9534f', 'Damaged road': '#e79a4d', 'Road closure': '#6f5bd3', 'Construction': '#2f7fb8' };
+let pickMap, pickMarker, pickCircle, reportsMap, reportsLayer;
+
+function addTiles(map) { L.tileLayer(TILE_URL, { maxZoom: 19, attribution: TILE_ATTR }).addTo(map); }
+function pinIcon(color) {
+  return L.divIcon({ className: '', html: `<span class="map-dot" style="background:${color}"></span>`, iconSize: [20, 20], iconAnchor: [10, 10] });
+}
+function updateLocationText() {
+  locationStatus.textContent = coords.adjusted
+    ? `${coords.lat.toFixed(5)}, ${coords.lng.toFixed(5)} (adjusted by you)`
+    : `${coords.lat.toFixed(5)}, ${coords.lng.toFixed(5)} (±${coords.accuracy} m)`;
+}
+function movePin(latlng) {
+  coords = { lat: latlng.lat, lng: latlng.lng, adjusted: true };
+  pickMarker.setLatLng(latlng);
+  pickCircle.setRadius(0);
+  updateLocationText();
+}
+function showPickMap() {
+  if (!mapsAvailable) { mapCaption.textContent = 'Location captured'; return; }
+  const latlng = [coords.lat, coords.lng];
+  if (!pickMap) {
+    pickMap = L.map('pick-map').setView(latlng, 17);
+    addTiles(pickMap);
+    pickCircle = L.circle(latlng, { radius: coords.accuracy, color: '#176b51', weight: 1, fillOpacity: 0.12 }).addTo(pickMap);
+    pickMarker = L.marker(latlng, { draggable: true, icon: pinIcon('#d9534f') }).addTo(pickMap);
+    pickMarker.on('dragend', () => movePin(pickMarker.getLatLng()));
+    pickMap.on('click', event => movePin(event.latlng));
+  } else {
+    pickMarker.setLatLng(latlng);
+    pickCircle.setLatLng(latlng);
+    pickCircle.setRadius(coords.accuracy);
+  }
+  pickMap.invalidateSize();
+  pickMap.setView(latlng, 17);
+}
+function renderReportsMap(reports) {
+  const box = document.querySelector('#reports-map');
+  const legend = document.querySelector('#map-legend');
+  if (!mapsAvailable || reports.length === 0) { box.hidden = true; legend.hidden = true; return; }
+  box.hidden = false;
+  legend.hidden = false;
+  if (!reportsMap) {
+    reportsMap = L.map(box).setView([13.0827, 80.2707], 11);
+    addTiles(reportsMap);
+    reportsLayer = L.layerGroup().addTo(reportsMap);
+    legend.replaceChildren(...Object.entries(ISSUE_COLORS).map(([name, color]) => {
+      const item = el('span', '');
+      const dot = el('i');
+      dot.style.background = color;
+      item.append(dot, name);
+      return item;
+    }));
+  }
+  reportsLayer.clearLayers();
+  const points = [];
+  reports.forEach(report => {
+    const latlng = [report.coords.lat, report.coords.lng];
+    points.push(latlng);
+    const popup = el('div', 'map-popup');
+    popup.append(el('strong', '', report.type));
+    popup.append(el('div', '', report.route ? `${report.route.zoneName} zone (simulated)` : 'Outside pilot area'));
+    if (report.note) popup.append(el('div', '', report.note));
+    if (report.photo) { const img = el('img'); img.src = report.photo; img.alt = ''; popup.append(img); }
+    L.marker(latlng, { icon: pinIcon(ISSUE_COLORS[report.type] || '#176b51') }).bindPopup(popup).addTo(reportsLayer);
+  });
+  reportsMap.invalidateSize();
+  reportsMap.fitBounds(points, { padding: [30, 30], maxZoom: 16 });
+}
 
 /* ---------- Submit ---------- */
 function buildReport({ type, note, photo, coords: position, sample = false }) {
@@ -323,6 +398,7 @@ async function renderReports() {
   const reports = await refreshCount();
   feedTotal.textContent = `${reports.length} report${reports.length === 1 ? '' : 's'}`;
   reportList.replaceChildren(...reports.map(reportCard));
+  renderReportsMap(reports);
   emptyState.hidden = reports.length > 0;
 }
 

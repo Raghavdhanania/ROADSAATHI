@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#123b31" />
   <title>RoadSathi — Road issue reporting</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -47,7 +48,7 @@
         <input id="file-input" type="file" accept="image/*" hidden />
 
         <div class="location-card"><div class="location-icon">⌖</div><div class="location-copy"><strong>Where is the issue?</strong><span id="location-status">Location hasn’t been added yet</span></div><button type="button" class="button location-button" id="location-button">Use my location</button></div>
-        <div class="location-map" id="location-map" hidden><div class="map-grid"></div><div class="map-roads"></div><span class="map-pin">●</span><span class="map-caption" id="map-caption">Location captured</span></div>
+        <div class="location-map" id="location-map" hidden><div id="pick-map"></div><span class="map-caption" id="map-caption">Drag the pin or tap the map to adjust</span></div>
 
         <button class="button primary submit-button" id="submit-button" type="submit"><span>Submit road report</span><span>→</span></button>
         <p class="privacy-note">Your report stays on this demo device. Authority routing is simulated for this prototype.</p>
@@ -58,12 +59,15 @@
       <div class="section-heading"><div><p class="eyebrow">COMMUNITY FEED</p><h2>Road reports</h2></div><span class="step-tag" id="feed-total">0 reports</span></div>
       <div class="dashboard-note"><span class="note-icon">i</span><span>Prototype dashboard · reports are stored on this device. Department assignment is a demo.</span></div>
       <div class="dashboard-actions"><button type="button" class="link-button" id="load-samples">Load sample reports</button><button type="button" class="link-button danger" id="clear-reports">Clear all reports</button></div>
+      <div id="reports-map" hidden></div>
+      <div class="map-legend" id="map-legend" hidden></div>
       <div class="report-list" id="report-list"></div>
       <div class="empty-state" id="empty-state"><div class="empty-icon">⌁</div><h3>No reports yet</h3><p>Submit a report and it will appear here.</p><button class="button primary" id="first-report">Create first report <span>→</span></button></div>
     </section>
     <footer><span>ROAD<span class="brand-light">SATHI</span></span><span>Built for safer streets, together.</span></footer>
   </main>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
   <script src="zones.js"></script>
   <script src="app.js"></script>
 </body>
