@@ -33,7 +33,7 @@ let cameraStream = null;
 let toastTimer;
 
 /* ---------- Storage: IndexedDB (photos are too big for localStorage) ---------- */
-const DB_NAME = 'roadsathi';
+const DB_NAME = 'roadsaathi';
 const STORE = 'reports';
 let dbPromise;
 let memoryReports = []; // fallback if IndexedDB is blocked (e.g. private mode)
@@ -201,6 +201,7 @@ fileInput.addEventListener('change', () => {
 
 /* ---------- Location ---------- */
 function resetLocation() {
+  clearPinHistory();
   coords = null;
   locationStatus.textContent = 'Location hasn’t been added yet';
   locationMap.hidden = true;
@@ -249,6 +250,8 @@ const TILE_URL = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
 const TILE_ATTR = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
 const ISSUE_COLORS = { 'Pothole': '#d9534f', 'Damaged road': '#e79a4d', 'Road closure': '#6f5bd3', 'Construction': '#2f7fb8' };
 let pickMap, pickMarker, pickCircle, reportsMap, reportsLayer;
+let pinHistory = [], pinIndex = -1, undoButton, redoButton;
+const MAX_PIN_HISTORY = 50;
 
 function addTiles(map) { L.tileLayer(TILE_URL, { maxZoom: 19, attribution: TILE_ATTR }).addTo(map); }
 function pinIcon(color) {
@@ -260,10 +263,71 @@ function updateLocationText() {
     : `${coords.lat.toFixed(5)}, ${coords.lng.toFixed(5)} (±${coords.accuracy} m)`;
 }
 function movePin(latlng) {
+  if (coords && coords.lat === latlng.lat && coords.lng === latlng.lng) return;
   coords = { lat: latlng.lat, lng: latlng.lng, adjusted: true };
   pickMarker.setLatLng(latlng);
   pickCircle.setRadius(0);
   updateLocationText();
+  pushPinHistory();
+}
+
+/* ---------- Undo / redo for the pin ---------- */
+function refreshHistoryButtons() {
+  if (!undoButton || !redoButton) return;
+  undoButton.disabled = pinIndex <= 0;
+  redoButton.disabled = pinIndex < 0 || pinIndex >= pinHistory.length - 1;
+}
+function resetPinHistory() {
+  pinHistory = [{ ...coords }];
+  pinIndex = 0;
+  refreshHistoryButtons();
+}
+function clearPinHistory() {
+  pinHistory = [];
+  pinIndex = -1;
+  refreshHistoryButtons();
+}
+function pushPinHistory() {
+  pinHistory = pinHistory.slice(0, pinIndex + 1); // a new move discards the redo path
+  pinHistory.push({ ...coords });
+  if (pinHistory.length > MAX_PIN_HISTORY) pinHistory.shift();
+  pinIndex = pinHistory.length - 1;
+  refreshHistoryButtons();
+}
+function stepPin(delta) {
+  const next = pinIndex + delta;
+  if (!pickMap || next < 0 || next >= pinHistory.length) return;
+  pinIndex = next;
+  coords = { ...pinHistory[pinIndex] };
+  const latlng = [coords.lat, coords.lng];
+  pickMarker.setLatLng(latlng);
+  pickCircle.setLatLng(latlng);
+  pickCircle.setRadius(coords.adjusted ? 0 : coords.accuracy);
+  updateLocationText();
+  if (!pickMap.getBounds().contains(latlng)) pickMap.panTo(latlng);
+  refreshHistoryButtons();
+}
+function addHistoryControl() {
+  const UNDO_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z"/></svg>';
+  const HistoryControl = L.Control.extend({
+    options: { position: 'topright' },
+    onAdd() {
+      const box = L.DomUtil.create('div', 'history-control');
+      undoButton = L.DomUtil.create('button', 'history-btn undo', box);
+      redoButton = L.DomUtil.create('button', 'history-btn redo', box);
+      [[undoButton, 'Undo pin move', -1], [redoButton, 'Redo pin move', 1]].forEach(([button, label, step]) => {
+        button.type = 'button';
+        button.title = label;
+        button.setAttribute('aria-label', label);
+        button.innerHTML = UNDO_ICON;
+        L.DomEvent.on(button, 'click', () => stepPin(step));
+      });
+      L.DomEvent.disableClickPropagation(box);
+      refreshHistoryButtons();
+      return box;
+    }
+  });
+  pickMap.addControl(new HistoryControl());
 }
 function showPickMap() {
   if (!mapsAvailable) { mapCaption.textContent = 'Location captured'; return; }
@@ -275,6 +339,7 @@ function showPickMap() {
     pickMarker = L.marker(latlng, { draggable: true, icon: pinIcon('#d9534f') }).addTo(pickMap);
     pickMarker.on('dragend', () => movePin(pickMarker.getLatLng()));
     pickMap.on('click', event => movePin(event.latlng));
+    addHistoryControl();
   } else {
     pickMarker.setLatLng(latlng);
     pickCircle.setLatLng(latlng);
@@ -282,6 +347,7 @@ function showPickMap() {
   }
   pickMap.invalidateSize();
   pickMap.setView(latlng, 17);
+  resetPinHistory(); // each new GPS fix starts a fresh history
 }
 function renderReportsMap(reports) {
   const box = document.querySelector('#reports-map');

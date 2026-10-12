@@ -1,11 +1,12 @@
-# RoadSathi
+# RoadSaathi
 
 A mobile-first civic-tech prototype for documenting road issues (potholes, damaged roads, closures, construction) with a photo and GPS location. Built for the MY Bharat Hack for Social Cause, Governance & Civic Technology theme.
 
 ## Run locally
 
+From inside the project folder:
+
 ```powershell
-cd RoadSathi
 py -m http.server 8000
 ```
 
@@ -44,10 +45,15 @@ On the Reports tab, "Load sample reports" adds four labelled sample entries (no 
 
 Automatic road-damage detection, in-vehicle capture mode, a shared backend, and integration with civic grievance systems.
 
+## Team
+
+- **Raghav Dhanania**: app development and integration (camera, GPS, maps, storage, zone routing).
+- **Daivik Patel**: research, documentation and presentation.
+
 ## AI-tool disclosure
 
-Parts of this project were written with AI assistance (ChatGPT and Claude). Update this section with the team's actual use and an honest estimate of the share before submission.
+Parts of the code and documentation were drafted with AI assistance (ChatGPT and Claude). The team reviewed, ran and tested the app on a phone before submission.
 
 ## License
 
-MIT. See `LICENSE`.
+MIT. See `LICENSE.txt`.
