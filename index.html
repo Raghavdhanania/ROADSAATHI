@@ -6,24 +6,24 @@
   <meta name="theme-color" content="#138808" />
   <title>RoadSaathi — Road issue reporting</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
-  <link rel="stylesheet" href="style.css?v=20261012-1" />
+  <link rel="stylesheet" href="style.css?v=20261012-2" />
 </head>
 <body>
   <header class="topbar">
     <a class="brand" href="#home" aria-label="RoadSaathi home"><span>Road<span class="brand-light">Saathi</span></span></a>
-    <div class="top-right"><span class="city-pill"><span class="live-dot"></span> Chennai pilot</span><button class="avatar" aria-label="Profile">S</button></div>
+    <div class="top-right"><span class="city-pill"><span class="live-dot"></span> Chennai demo</span></div>
   </header>
 
   <main class="app-shell" id="home">
     <section class="intro">
-      <div><p class="eyebrow">CITIZEN ROAD REPORTING</p><h1>Make your road<br /><em>count.</em></h1><p class="intro-copy">Spot a road issue? Share its location and evidence so it can reach the right civic team.</p></div>
+      <div><p class="eyebrow">CITIZEN ROAD REPORTING</p><h1>Make your road<br /><em>count.</em></h1><p class="intro-copy">Spot a road issue? Capture a photo and its location. In this demo, reports are matched to a simulated civic zone.</p></div>
       <div class="hero-art" aria-hidden="true"><div class="sun"></div><div class="road-shape"></div><span class="pin pin-one">●</span><span class="pin pin-two">●</span><span class="art-label">LOCAL<br />REPORTS</span></div>
     </section>
 
     <nav class="tabs" aria-label="App sections"><button class="tab active" data-view="report">＋ <span>Report issue</span></button><button class="tab" data-view="dashboard">▤ <span>Reports <b id="report-count">0</b></span></button></nav>
 
     <section class="view" id="report-view">
-      <div class="section-heading"><div><p class="eyebrow">NEW REPORT</p><h2>What did you notice?</h2></div><span class="step-tag">01 / 03</span></div>
+      <div class="section-heading"><div><p class="eyebrow">NEW REPORT</p><h2>What did you notice?</h2></div></div>
       <form id="report-form">
         <label class="field-label" for="issue-type">Issue type</label>
         <div class="issue-grid" id="issue-grid">
@@ -68,7 +68,7 @@
   </main>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
-  <script src="zones.js"></script>
-  <script src="app.js"></script>
+  <script src="zones.js?v=20261012-2"></script>
+  <script src="app.js?v=20261012-2"></script>
 </body>
 </html>

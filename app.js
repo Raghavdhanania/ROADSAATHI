@@ -374,7 +374,7 @@ function renderReportsMap(reports) {
     points.push(latlng);
     const popup = el('div', 'map-popup');
     popup.append(el('strong', '', report.type));
-    popup.append(el('div', '', report.route ? `${report.route.zoneName} zone (simulated)` : 'Outside pilot area'));
+    popup.append(el('div', '', report.route ? `${report.route.zoneName} zone (simulated)` : 'Outside demo area'));
     if (report.note) popup.append(el('div', '', report.note));
     if (report.photo) { const img = el('img'); img.src = report.photo; img.alt = ''; popup.append(img); }
     L.marker(latlng, { icon: pinIcon(ISSUE_COLORS[report.type] || '#176b51') }).bindPopup(popup).addTo(reportsLayer);
@@ -440,7 +440,7 @@ function reportCard(report) {
   head.append(el('span', 'issue-badge', report.type),
     el('span', 'status-badge', report.sample ? 'Sample · Received' : 'Received (demo)'));
   info.append(head);
-  info.append(el('h3', '', report.route ? `${report.route.zoneName} area` : 'Outside Chennai pilot area'));
+  info.append(el('h3', '', report.route ? `${report.route.zoneName} area` : 'Outside demo area'));
   if (report.note) info.append(el('p', '', report.note));
   const meta = el('div', 'report-meta');
   meta.append(
