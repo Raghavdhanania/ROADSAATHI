@@ -105,11 +105,22 @@ function showView(view) {
 tabs.forEach(tab => tab.addEventListener('click', () => showView(tab.dataset.view)));
 document.querySelector('#first-report').addEventListener('click', () => showView('report'));
 
-document.querySelectorAll('.issue-option').forEach(button => button.addEventListener('click', () => {
-  document.querySelectorAll('.issue-option').forEach(option => option.classList.remove('selected'));
-  button.classList.add('selected');
-  issueInput.value = button.dataset.type;
-}));
+const issueGrid = document.querySelector('#issue-grid');
+const noteHint = document.querySelector('#note-hint');
+function selectIssue(type) {
+  issueInput.value = type;
+  document.querySelectorAll('.issue-option').forEach(option => {
+    const on = option.dataset.type === type;
+    option.classList.toggle('selected', on);
+    option.setAttribute('aria-pressed', on ? 'true' : 'false');
+  });
+  issueGrid.classList.remove('needs-choice');
+  const other = type === 'Other';
+  noteHint.textContent = other ? 'REQUIRED' : 'OPTIONAL';
+  description.placeholder = other ? 'Describe the issue, for example: fallen tree blocking the lane' : 'For example: deep pothole near the bus stop';
+}
+function resetIssue() { selectIssue(''); }
+document.querySelectorAll('.issue-option').forEach(button => button.addEventListener('click', () => selectIssue(button.dataset.type)));
 description.addEventListener('input', () => { charCount.textContent = `${description.value.length}/180`; });
 
 /* ---------- Photo: camera, upload, resize ---------- */
@@ -248,7 +259,7 @@ locationButton.addEventListener('click', () => {
 const mapsAvailable = typeof L !== 'undefined';
 const TILE_URL = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
 const TILE_ATTR = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
-const ISSUE_COLORS = { 'Pothole': '#d9534f', 'Damaged road': '#e79a4d', 'Road closure': '#6f5bd3', 'Construction': '#2f7fb8' };
+const ISSUE_COLORS = { 'Pothole': '#d9534f', 'Damaged road': '#e79a4d', 'Road closure': '#6f5bd3', 'Construction': '#2f7fb8', 'Other': '#6b7a74' };
 let pickMap, pickMarker, pickCircle, reportsMap, reportsLayer;
 let pinHistory = [], pinIndex = -1, undoButton, redoButton;
 const MAX_PIN_HISTORY = 50;
@@ -399,6 +410,17 @@ function buildReport({ type, note, photo, coords: position, sample = false }) {
 }
 form.addEventListener('submit', async event => {
   event.preventDefault();
+  if (!issueInput.value) {
+    issueGrid.classList.add('needs-choice');
+    issueGrid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    notify('Choose an issue type first.');
+    return;
+  }
+  if (issueInput.value === 'Other' && description.value.trim().length < 3) {
+    description.focus();
+    notify('Please describe the issue in the note.');
+    return;
+  }
   if (!photoData) { notify('Add a photo of the issue first.'); return; }
   if (!coords) { notify('Add the location of the issue first.'); return; }
   submitButton.disabled = true;
@@ -406,6 +428,7 @@ form.addEventListener('submit', async event => {
     await addReports([buildReport({ type: issueInput.value, note: description.value.trim(), photo: photoData, coords })]);
     description.value = '';
     charCount.textContent = '0/180';
+    resetIssue();
     clearPhoto();
     resetLocation();
     await refreshCount();
@@ -466,14 +489,22 @@ async function renderReports() {
   reportList.replaceChildren(...reports.map(reportCard));
   renderReportsMap(reports);
   emptyState.hidden = reports.length > 0;
+  // Sample data is a demo helper: only shown when the URL has ?demo
+  loadSamplesButton.hidden = !DEMO_MODE;
+  clearReportsButton.hidden = reports.length === 0;
+  dashboardActions.hidden = loadSamplesButton.hidden && clearReportsButton.hidden;
 }
 
-document.querySelector('#clear-reports').addEventListener('click', async () => {
+const DEMO_MODE = new URLSearchParams(location.search).has('demo');
+const dashboardActions = document.querySelector('#dashboard-actions');
+const loadSamplesButton = document.querySelector('#load-samples');
+const clearReportsButton = document.querySelector('#clear-reports');
+clearReportsButton.addEventListener('click', async () => {
   if (!confirm('Delete all reports stored on this device?')) return;
   await clearReports();
   renderReports();
 });
-document.querySelector('#load-samples').addEventListener('click', async () => {
+loadSamplesButton.addEventListener('click', async () => {
   const samples = [
     { type: 'Pothole', note: 'Sample: deep pothole near the junction', coords: { lat: 13.0418, lng: 80.2341 } },
     { type: 'Damaged road', note: 'Sample: cracked surface after rain', coords: { lat: 13.0067, lng: 80.2573 } },

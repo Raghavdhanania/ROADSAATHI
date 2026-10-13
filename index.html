@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#138808" />
   <title>RoadSaathi — Road issue reporting</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
-  <link rel="stylesheet" href="style.css?v=20261012-2" />
+  <link rel="stylesheet" href="style.css?v=20261013-1" />
 </head>
 <body>
   <header class="topbar">
@@ -25,16 +25,17 @@
     <section class="view" id="report-view">
       <div class="section-heading"><div><p class="eyebrow">NEW REPORT</p><h2>What did you notice?</h2></div></div>
       <form id="report-form">
-        <label class="field-label" for="issue-type">Issue type</label>
-        <div class="issue-grid" id="issue-grid">
-          <button class="issue-option selected" type="button" data-type="Pothole"><span class="issue-icon">◉</span><span>Pothole</span></button>
-          <button class="issue-option" type="button" data-type="Damaged road"><span class="issue-icon">⌁</span><span>Damaged road</span></button>
-          <button class="issue-option" type="button" data-type="Road closure"><span class="issue-icon">⊘</span><span>Road closure</span></button>
-          <button class="issue-option" type="button" data-type="Construction"><span class="issue-icon">⚒</span><span>Construction</span></button>
+        <span class="field-label" id="issue-label">Issue type</span>
+        <div class="issue-grid" id="issue-grid" role="group" aria-labelledby="issue-label">
+          <button class="issue-option" type="button" data-type="Pothole" aria-pressed="false"><span class="issue-icon">◉</span><span>Pothole</span></button>
+          <button class="issue-option" type="button" data-type="Damaged road" aria-pressed="false"><span class="issue-icon">⌁</span><span>Damaged road</span></button>
+          <button class="issue-option" type="button" data-type="Road closure" aria-pressed="false"><span class="issue-icon">⊘</span><span>Road closure</span></button>
+          <button class="issue-option" type="button" data-type="Construction" aria-pressed="false"><span class="issue-icon">⚒</span><span>Construction</span></button>
+          <button class="issue-option" type="button" data-type="Other" aria-pressed="false"><span class="issue-icon">⋯</span><span>Other</span></button>
         </div>
-        <input type="hidden" id="issue-type" value="Pothole" />
+        <input type="hidden" id="issue-type" value="" />
 
-        <div class="field-row"><label class="field-label" for="description">Add a note <span class="optional">OPTIONAL</span></label><span class="char-count" id="char-count">0/180</span></div>
+        <div class="field-row"><label class="field-label" for="description">Add a note <span class="optional" id="note-hint">OPTIONAL</span></label><span class="char-count" id="char-count">0/180</span></div>
         <textarea id="description" maxlength="180" placeholder="For example: deep pothole near the bus stop"></textarea>
 
         <div class="field-row evidence-heading"><span class="field-label">Photo evidence</span><span class="optional">TAKE OR UPLOAD</span></div>
@@ -58,7 +59,7 @@
     <section class="view" id="dashboard-view" hidden>
       <div class="section-heading"><div><p class="eyebrow">COMMUNITY FEED</p><h2>Road reports</h2></div><span class="step-tag" id="feed-total">0 reports</span></div>
       <div class="dashboard-note"><span class="note-icon">i</span><span>Prototype dashboard · reports are stored on this device. Department assignment is a demo.</span></div>
-      <div class="dashboard-actions"><button type="button" class="link-button" id="load-samples">Load sample reports</button><button type="button" class="link-button danger" id="clear-reports">Clear all reports</button></div>
+      <div class="dashboard-actions" id="dashboard-actions"><button type="button" class="link-button" id="load-samples" hidden>Load sample reports</button><button type="button" class="link-button danger" id="clear-reports">Clear all reports</button></div>
       <div id="reports-map" hidden></div>
       <div class="map-legend" id="map-legend" hidden></div>
       <div class="report-list" id="report-list"></div>
@@ -68,7 +69,7 @@
   </main>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
-  <script src="zones.js?v=20261012-2"></script>
-  <script src="app.js?v=20261012-2"></script>
+  <script src="zones.js?v=20261013-1"></script>
+  <script src="app.js?v=20261013-1"></script>
 </body>
 </html>
