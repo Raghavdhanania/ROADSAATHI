@@ -14,6 +14,10 @@ Open <http://localhost:8000>. Camera and location work on `localhost` after you 
 
 **Testing on a phone:** browsers block camera and GPS on plain `http://192.168.x.x`. Deploy this folder to an HTTPS host (GitHub Pages, Netlify or Vercel) and open that link on the phone.
 
+## Problem
+
+People encountering potholes, damaged surfaces, road closures, or construction may not know which authority to contact or how to follow up. RoadSaathi explores a simpler way to record an issue with evidence and location.
+
 ## Prototype flow
 
 1. Choose an issue type and add an optional note.
@@ -43,7 +47,7 @@ On the Reports tab, "Load sample reports" adds four labelled sample entries (no 
 
 ## Roadmap (not built)
 
-Automatic road-damage detection, in-vehicle capture mode, a shared backend, and integration with civic grievance systems.
+Automatic road-damage detection, in-vehicle capture mode, a shared backend, and integration with civic grievance systems. The classification, prioritization, duplicate detection ideas are future work.
 
 ## Team
 
@@ -52,7 +56,7 @@ Automatic road-damage detection, in-vehicle capture mode, a shared backend, and 
 
 ## AI-tool disclosure
 
-Parts of the code and documentation were drafted with AI assistance (ChatGPT and Claude). The team reviewed, ran and tested the app on a phone before submission.
+Parts of the code and documentation were drafted with AI assistance (ChatGPT and Claude). The team reviewed, ran and tested the app on a phone and computer before submission.
 
 ## License
 
