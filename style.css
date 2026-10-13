@@ -43,3 +43,7 @@
 .secondary{background:#fff0df;color:#8d4b13}.secondary:hover{background:#ffe4c4}.primary{background:var(--green)}.primary:hover{background:#0f7106}
 .location-icon{background:#eef7eb;color:var(--green)}.location-button{color:var(--green);border-color:#a8cfa0}.dashboard-note{background:#fff4e7;color:#7d5b39}.note-icon{background:#ffe0bd}.issue-badge{background:#eff8ed;color:var(--green-dark)}
 .report-placeholder{color:var(--green)}footer>span:first-child{font-family:'Yatra One',Manrope,sans-serif;font-size:13px;letter-spacing:.2px;color:var(--navy)}.toast{background:var(--navy)}
+/* issue grid: 5 options, and a nudge when none is chosen */
+.issue-grid{grid-template-columns:repeat(5,1fr)}
+.issue-grid.needs-choice .issue-option{border-color:#e0883a;background:#fff8f0}
+@media(max-width:650px){.issue-grid{grid-template-columns:repeat(3,1fr)}}
