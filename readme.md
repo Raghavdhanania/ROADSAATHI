@@ -56,7 +56,7 @@ Automatic road-damage detection, in-vehicle capture mode, a shared backend, and 
 
 ## AI-tool disclosure
 
-Parts of the code and documentation were drafted with AI assistance (ChatGPT and Claude). The team reviewed, ran and tested the app on a phone and computer before submission.
+Generative AI was used to debug issues with the code, add comments for code understandability(verified by the team) and para-phrase documentation(verified by the team). 
 
 ## License
 
